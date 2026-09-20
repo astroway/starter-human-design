@@ -155,7 +155,11 @@ table.activations th { color: var(--muted); font-weight: 600; }
 code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9em; }
 code.design { color: var(--design); }
 
-/* 1.9 rather than the inherited 1.6: an inline link in a 0.85rem paragraph
-   is 16px tall, under the 24px a thumb needs. */
-footer { margin-top: 3rem; color: var(--muted); font-size: 0.85rem; line-height: 1.9; }
+footer { margin-top: 3rem; color: var(--muted); font-size: 0.9rem; line-height: 2.2; }
+/* An inline <a> is as tall as its text, 16px here, whatever the line-height of
+   the paragraph around it: line spacing moves the lines apart and leaves the
+   link's own box alone. inline-block plus padding is what actually gives a
+   thumb something to hit, and the line-height above keeps two wrapped links
+   from landing on each other. */
+footer a { display: inline-block; padding: 6px 0; }
 a { color: var(--accent); }
