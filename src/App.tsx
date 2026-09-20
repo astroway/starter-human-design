@@ -114,8 +114,10 @@ export function App() {
     setError(null);
     try {
       /* Our own server, never api.astroway.info. The key lives there and the
-         browser could not reach the API directly even if it had one. */
-      const res = await fetch('/api/reading', {
+         browser could not reach the API directly even if it had one.
+         BASE_URL is '/' unless the app was built for a subpath, which is how
+         the demo runs under /demo/human-design/ without a fork. */
+      const res = await fetch(`${import.meta.env.BASE_URL}api/reading`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify(input),

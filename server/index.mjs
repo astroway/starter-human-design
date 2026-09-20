@@ -142,17 +142,25 @@ async function serveStatic(res, pathname) {
   }
 }
 
+/* Everything after the mount point. The demo runs behind nginx at
+   /demo/human-design/ and a plain `npm start` runs at the root, so the routes
+   below match on the tail rather than on the whole path. */
+const MOUNT = (process.env.BASE_PATH ?? '/').replace(/\/+$/, '');
+
 const server = createServer((req, res) => {
   const url = new URL(req.url ?? '/', 'http://localhost');
-  if (url.pathname === '/api/reading' && req.method === 'POST') {
+  const pathname = MOUNT && url.pathname.startsWith(MOUNT)
+    ? url.pathname.slice(MOUNT.length) || '/'
+    : url.pathname;
+  if (pathname === '/api/reading' && req.method === 'POST') {
     handleReading(req, res).catch((e) => sendJson(res, 500, { error: String(e?.message ?? e) }));
     return;
   }
-  if (url.pathname === '/api/health') return sendJson(res, 200, { ok: true, keyed: Boolean(API_KEY) });
+  if (pathname === '/api/health') return sendJson(res, 200, { ok: true, keyed: Boolean(API_KEY) });
   if (req.method !== 'GET') { res.writeHead(405); return res.end(); }
-  void serveStatic(res, url.pathname);
+  void serveStatic(res, pathname);
 });
 
 server.listen(PORT, () => {
-  console.log(JSON.stringify({ event: 'started', port: PORT, base_url: BASE_URL, keyed: Boolean(API_KEY) }));
+  console.log(JSON.stringify({ event: 'started', port: PORT, base_url: BASE_URL, mount: MOUNT || '/', keyed: Boolean(API_KEY) }));
 });
